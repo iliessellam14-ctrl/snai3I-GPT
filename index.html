@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ask snai3i</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+  <!-- Remplace le src par ton logo -->
+  <img src="https://upload.wikimedia.org/wikipedia/commons/7/7e/Logo_sample.png" alt="Ask snai3i Logo">
+  <h1>Ask snai3i</h1>
+</header>
+
+<div id="chat"></div>
+
+<div id="inputArea">
+  <input type="text" id="userInput" placeholder="Écris quelque chose...">
+  <button id="sendBtn">Envoyer</button>
+</div>
+
+<script>
+const chat = document.getElementById('chat');
+const input = document.getElementById('userInput');
+const btn = document.getElementById('sendBtn');
+
+function speak(text) {
+  const utter = new SpeechSynthesisUtterance(text);
+  utter.lang = 'fr-FR';
+  speechSynthesis.speak(utter);
+}
+
+async function sendMessage() {
+  const message = input.value.trim();
+  if (!message) return;
+  chat.innerHTML += `<div class="message user">${message}</div>`;
+  input.value = '';
+  chat.scrollTop = chat.scrollHeight;
+
+  // Exemple IA local (texte inversé)
+  let aiResponse = "snai3i dit : " + message.split('').reverse().join('');
+  chat.innerHTML += `<div class="message ai">${aiResponse}</div>`;
+  speak(aiResponse);
+  chat.scrollTop = chat.scrollHeight;
+
+  // Pour vraie IA avec OpenAI API, décommente ci-dessous
+  /*
+  const res = await fetch('https://api.openai.com/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type':'application/json',
+      'Authorization':'Bearer TON_OPENAI_API_KEY'
+    },
+    body: JSON.stringify({
+      model: "gpt-3.5-turbo",
+      messages: [{role:"user", content: message}]
+    })
+  });
+  const data = await res.json();
+  const aiResp = data.choices[0].message.content;
+  chat.innerHTML += `<div class="message ai">${aiResp}</div>`;
+  speak(aiResp);
+  chat.scrollTop = chat.scrollHeight;
+  */
+}
+
+btn.addEventListener('click', sendMessage);
+input.addEventListener('keypress', e => { if (e.key === 'Enter') sendMessage(); });
+</script>
+
+</body>
+</html>
